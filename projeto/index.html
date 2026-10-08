@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Bubble Sort - VETORES</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #ffffff;
+            color: #121212;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 30px;
+        }
+
+        .logo-image {
+            height: 320px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 6rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #121212;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .custom-controls {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .custom-controls label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .custom-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #customInput {
+            flex: 1;
+            min-width: 0;
+            padding: 11px 12px;
+            font-size: 1rem;
+            border: 2px solid #ced4da;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        #customInput:focus {
+            border-color: #007bff;
+        }
+
+        .help-text {
+            margin-top: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            margin-top: 8px;
+            color: #dc3545;
+            font-weight: bold;
+            display: none;
+        }
+
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            max-width: 800px;
+            height: 300px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .bar {
+            flex: 1;
+            min-width: 0;
+            background-color: #28a745;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            border-radius: 2px 2px 0 0;
+            transition: height 0s, background-color 0s;
+        }
+
+        .bar.active {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .bar.swapping {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .bar.sorted {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        @media (max-width: 700px) {
+            .header-logo {
+                flex-direction: column;
+            }
+
+            .logo-image {
+                height: 180px;
+            }
+
+            .logo-text {
+                font-size: 3rem;
+            }
+
+            .custom-row {
+                flex-direction: column;
+            }
+
+            .custom-row button {
+                width: 100%;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .bar {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-logo">
+        <img
+            class="logo-image"
+            src="https://t4.ftcdn.net/jpg/01/02/01/41/360_F_102014141_FdMeLtjObo1pXXtEQAG7SvsCpCKYYHye.jpg"
+            alt="Pato Vetores"
+        >
+
+        <span class="logo-text">VETORES</span>
+    </header>
+
+    <div class="controls">
+        <button id="resetBtn" type="button">
+            Gerar Novo Vetor Aleatório
+        </button>
+
+        <button id="sortBtn" type="button">
+            Iniciar Ordenação
+        </button>
+    </div>
+
+    <div class="custom-controls">
+
+        <label for="customInput">
+            Definir valores personalizados
+        </label>
+
+        <div class="custom-row">
+
+            <input
+                type="text"
+                id="customInput"
+                inputmode="numeric"
+                autocomplete="off"
+                maxlength="500"
+                placeholder="Ex.: 50, 20, 80, 10, 35, 70"
+            >
+
+            <button
+                id="customBtn"
+                type="button"
+            >
+                Usar Valores
+            </button>
+
+        </div>
+
+        <div class="help-text">
+            Digite números separados por vírgula, espaço ou ponto e vírgula.
+        </div>
+
+        <div
+            id="errorMessage"
+            class="error-message"
+            aria-live="polite"
+        ></div>
+
+    </div>
+
+    <div
+        class="chart-container"
+        id="chart"
+    ></div>
+
+    <script>
+        'use strict';
+
+        const chartContainer =
+            document.getElementById('chart');
+
+        const sortBtn =
+            document.getElementById('sortBtn');
+
+        const resetBtn =
+            document.getElementById('resetBtn');
+
+        const customInput =
+            document.getElementById('customInput');
+
+        const customBtn =
+            document.getElementById('customBtn');
+
+        const errorMessage =
+            document.getElementById('errorMessage');
+
+        const ARRAY_SIZE = 20;
+        const MAX_CUSTOM_VALUES = 50;
+        const MAX_INPUT_LENGTH = 500;
+
+        let array = [];
+        let isSorting = false;
+
+        const dingAudio = new Audio('ding.mp3');
+        const felizAudio = new Audio('feliz.mp3');
+
+        dingAudio.preload = 'auto';
+        felizAudio.preload = 'auto';
+
+        dingAudio.load();
+        felizAudio.load();
+
+        function playDing() {
+            dingAudio.pause();
+            dingAudio.currentTime = 0;
+
+            dingAudio.play().catch(() => {});
+        }
+
+        function playFeliz() {
+            felizAudio.pause();
+            felizAudio.currentTime = 0;
+
+            felizAudio.play().catch(() => {});
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+        }
+
+        function generateArray() {
+            if (isSorting) {
+                return;
+            }
+
+            hideError();
+
+            const numbers = [];
+
+            for (let i = 10; i <= 99; i++) {
+                numbers.push(i);
+            }
+
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j =
+                    Math.floor(
+                        Math.random() * (i + 1)
+                    );
+
+                [
+                    numbers[i],
+                    numbers[j]
+                ] = [
+                    numbers[j],
+                    numbers[i]
+                ];
+            }
+
+            array =
+                numbers.slice(0, ARRAY_SIZE);
+
+            renderChart();
+
+            sortBtn.disabled = false;
+        }
+
+        function useCustomValues() {
+            if (isSorting) {
+                return;
+            }
+
+            hideError();
+
+            const input =
+                customInput.value.trim();
+
+            if (!input) {
+                showError(
+                    'Digite pelo menos dois valores.'
+                );
+                return;
+            }
+
+            if (input.length > MAX_INPUT_LENGTH) {
+                showError(
+                    'A entrada é muito grande.'
+                );
+                return;
+            }
+
+            if (
+                !/^-?\d+(?:[.,;\s]+-?\d+)*$/.test(input)
+            ) {
+                showError(
+                    'Use somente números separados por vírgula, espaço ou ponto e vírgula.'
+                );
+                return;
+            }
+
+            const parts =
+                input.split(/[,\s;]+/);
+
+            const values = [];
+
+            for (const part of parts) {
+                if (!/^-?\d+$/.test(part)) {
+                    showError('Valor inválido.');
+                    return;
+                }
+
+                const value = Number(part);
+
+                if (!Number.isSafeInteger(value)) {
+                    showError(
+                        'Todos os valores devem ser números inteiros válidos.'
+                    );
+                    return;
+                }
+
+                values.push(value);
+            }
+
+            if (values.length < 2) {
+                showError(
+                    'Digite pelo menos dois valores.'
+                );
+                return;
+            }
+
+            if (values.length > MAX_CUSTOM_VALUES) {
+                showError(
+                    `O máximo é de ${MAX_CUSTOM_VALUES} valores.`
+                );
+                return;
+            }
+
+            const uniqueValues =
+                new Set(values);
+
+            if (
+                uniqueValues.size !==
+                values.length
+            ) {
+                showError(
+                    'Valores repetidos não são permitidos.'
+                );
+                return;
+            }
+
+            array = values;
+
+            renderChart();
+
+            sortBtn.disabled = false;
+        }
+
+        function getBarHeight(value) {
+            const maxValue =
+                Math.max(...array);
+
+            const minValue =
+                Math.min(...array);
+
+            if (maxValue === minValue) {
+                return 50;
+            }
+
+            return (
+                10 +
+                (
+                    (value - minValue) /
+                    (maxValue - minValue)
+                ) * 90
+            );
+        }
+
+        function renderChart() {
+            chartContainer.replaceChildren();
+
+            if (array.length === 0) {
+                return;
+            }
+
+            for (const value of array) {
+                const bar =
+                    document.createElement('div');
+
+                bar.className = 'bar';
+
+                bar.style.height =
+                    `${getBarHeight(value)}%`;
+
+                bar.textContent =
+                    String(value);
+
+                chartContainer.appendChild(bar);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(
+                resolve => setTimeout(
+                    resolve,
+                    ms
+                )
+            );
+        }
+
+        async function bubbleSort() {
+
+            if (
+                isSorting ||
+                array.length < 2
+            ) {
+                return;
+            }
+
+            isSorting = true;
+
+            sortBtn.disabled = true;
+            resetBtn.disabled = true;
+            customBtn.disabled = true;
+            customInput.disabled = true;
+
+            const bars =
+                chartContainer.children;
+
+            const n =
+                array.length;
+
+            for (
+                let i = 0;
+                i < n - 1;
+                i++
+            ) {
+
+                for (
+                    let j = 0;
+                    j < n - i - 1;
+                    j++
+                ) {
+
+                    bars[j]
+                        .classList
+                        .add('active');
+
+                    bars[j + 1]
+                        .classList
+                        .add('active');
+
+                    await sleep(15);
+
+                    if (
+                        array[j] >
+                        array[j + 1]
+                    ) {
+
+                        bars[j]
+                            .classList
+                            .add('swapping');
+
+                        bars[j + 1]
+                            .classList
+                            .add('swapping');
+
+                        [
+                            array[j],
+                            array[j + 1]
+                        ] = [
+                            array[j + 1],
+                            array[j]
+                        ];
+
+                        bars[j].textContent =
+                            String(array[j]);
+
+                        bars[j + 1].textContent =
+                            String(array[j + 1]);
+
+                        bars[j].style.height =
+                            `${getBarHeight(array[j])}%`;
+
+                        bars[j + 1].style.height =
+                            `${getBarHeight(array[j + 1])}%`;
+
+                        await sleep(20);
+                    }
+
+                    bars[j]
+                        .classList
+                        .remove(
+                            'active',
+                            'swapping'
+                        );
+
+                    bars[j + 1]
+                        .classList
+                        .remove(
+                            'active',
+                            'swapping'
+                        );
+                }
+
+                bars[n - i - 1]
+                    .classList
+                    .add('sorted');
+
+                playDing();
+            }
+
+            bars[0]
+                .classList
+                .add('sorted');
+
+            playDing();
+
+            isSorting = false;
+
+            resetBtn.disabled = false;
+            customBtn.disabled = false;
+            customInput.disabled = false;
+
+            playFeliz();
+        }
+
+        customInput.addEventListener(
+            'input',
+            () => {
+
+                const sanitized =
+                    customInput.value
+                        .replace(
+                            /[^0-9,;\s-]/g,
+                            ''
+                        )
+                        .slice(
+                            0,
+                            MAX_INPUT_LENGTH
+                        );
+
+                if (
+                    customInput.value !==
+                    sanitized
+                ) {
+                    customInput.value =
+                        sanitized;
+                }
+            }
+        );
+
+        sortBtn.addEventListener(
+            'click',
+            bubbleSort
+        );
+
+        resetBtn.addEventListener(
+            'click',
+            generateArray
+        );
+
+        customBtn.addEventListener(
+            'click',
+            useCustomValues
+        );
+
+        customInput.addEventListener(
+            'keydown',
+            event => {
+
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    useCustomValues();
+                }
+            }
+        );
+
+        generateArray();
+
+    </script>
+
+</body>
+</html>
